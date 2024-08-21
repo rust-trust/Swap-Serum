@@ -13,10 +13,10 @@ const TAKER_FEE = 0.0022;
 
 describe("swap", () => {
   // Configure the client to use the local cluster.
-  anchor.setProvider(anchor.Provider.env());
+  anchor.setProvider(anchor.AnchorProvider.env());
 
   // Swap program client.
-  const program = anchor.workspace.Swap;
+  const program = anchor.workspace.SerumSwap;
 
   // Accounts used to setup the orderbook.
   let ORDERBOOK_ENV,
@@ -212,7 +212,7 @@ describe("swap", () => {
     );
 
     // Send it.
-    await program.provider.send(tx, [openOrders]);
+    await program.provider.sendAndConfirm(tx, [openOrders]);
 
     // Balance after the transaction.
     const afterAccount = await program.provider.connection.getAccountInfo(
@@ -242,7 +242,7 @@ describe("swap", () => {
         await program.rpc.swap(
           Side.Bid,
           swapAmount,
-          { rate: new BN(1.0), decimals: 6 },
+          { rate: new BN(1.0), fromDecimals: 6, toDecimals: 6, strict: false },
           {
             accounts: SWAP_USDC_A_ACCOUNTS,
             instructions: [
@@ -291,7 +291,12 @@ describe("swap", () => {
         await program.rpc.swap(
           Side.Ask,
           new BN(swapAmount * 10 ** 6),
-          { rate: new BN(5 * 10 ** 6), decimals: 6 },
+          {
+            rate: new BN(5 * 10 ** 6),
+            fromDecimals: 6,
+            toDecimals: 6,
+            strict: false,
+          },
           {
             accounts: SWAP_A_USDC_ACCOUNTS,
           }
@@ -314,7 +319,12 @@ describe("swap", () => {
         // Perform the actual swap.
         await program.rpc.swapTransitive(
           new BN(swapAmount * 10 ** 6),
-          { rate: new BN(0.98 * 10 ** 6), decimals: 6 },
+          {
+            rate: new BN(0.98 * 10 ** 6),
+            fromDecimals: 6,
+            toDecimals: 6,
+            strict: false,
+          },
           {
             accounts: {
               from: {
@@ -375,7 +385,12 @@ describe("swap", () => {
         // Perform the actual swap.
         await program.rpc.swapTransitive(
           new BN(swapAmount * 10 ** 6),
-          { rate: new BN(0.9 * 10 ** 6), decimals: 6 },
+          {
+            rate: new BN(0.9 * 10 ** 6),
+            fromDecimals: 6,
+            toDecimals: 6,
+            strict: false,
+          },
           {
             accounts: {
               from: {
